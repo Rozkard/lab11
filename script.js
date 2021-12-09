@@ -1,30 +1,43 @@
 $(document).ready(function(){
-	var wordList = ["hello", "they", "word", "hot", "time"];
-	var translationList = ["привіт", "вони", "слово", "гарячий", "час"]
-	var userTranslation = [];
-	var wordOrder = [];
+	var wordList = [
+	["hello", "they", "word", "hot", "time"],
+	[" ironic", "futuristic", "imagine", "antic", "religion",],
+	[" literally", "produce", "deceit", "acknowledgement", "diverse",]
+	];
+	var translationList = [
+	["привіт", "вони", "слово", "гарячий", "час"],
+	["іронічний", "футуристичний", "уяви", "античний", "релігія"],
+	["буквально", "виробляти", "обман", "визнання", "різноманітний"]
+	];
+	var userTranslation = [[],[],[]];
+	var wordOrder = [[],[],[]];
 	var currentWord = 0;
-	let wordAmount = 5;
+	var currentLevel =0;
+	let wordAmount = wordList[0].length;
+	let amountOfLevels =3
+	$('#level1').prop('checked',true);
 	var rightAnswer = 0;
 	var falseAnswer = 0;
 	$("#currentStep").html(currentWord+1 + " з " + wordAmount);
-	for(var i =0; i<wordAmount;i++){
-		wordOrder[i] = i;
+	for(n=0;n<amountOfLevels;n++){
+		for(var m =0; m<wordList[n].length;m++){
+			wordOrder[n][m] = m;
 
+		}
 	}
 	
-	wordOrder.sort(() => Math.random() - 0.5);
-	$("#word").html(wordList[wordOrder[currentWord]]);
+	wordOrder[currentLevel].sort(() => Math.random() - 0.5);
 	
+	$("#word").html(wordList[currentLevel][wordOrder[currentLevel][currentWord]]);
 	$(".next").click(function(){
 		currentWord++;
 		if(currentWord==wordAmount){
 			currentWord = 0;
 		}
-		$("#word").html(wordList[wordOrder[currentWord]]);
+		$("#word").html(wordList[currentLevel][wordOrder[currentLevel][currentWord]]);
 		$("#currentStep").html(currentWord+1 + " з " + wordAmount);
-			$("#inputText").val(userTranslation[wordOrder[currentWord]])
-		if(userTranslation[wordOrder[currentWord]]!= undefined){
+			$("#inputText").val(userTranslation[currentLevel][wordOrder[currentLevel][currentWord]])
+		if(userTranslation[currentLevel][wordOrder[currentLevel][currentWord]]!= undefined){
 		
 			$('input').attr('readonly',true);
 		}
@@ -37,10 +50,10 @@ $(document).ready(function(){
 		if(currentWord==-1){
 			currentWord = wordAmount-1;
 		}
-		$("#word").html(wordList[wordOrder[currentWord]]);
+		$("#word").html(wordList[currentLevel][wordOrder[currentLevel][currentWord]]);
 		$("#currentStep").html(currentWord+1 + " з " + wordAmount);
-		$("#inputText").val(userTranslation[wordOrder[currentWord]])
-		if(userTranslation[wordOrder[currentWord]]!= undefined){
+		$("#inputText").val(userTranslation[currentLevel][wordOrder[currentLevel][currentWord]])
+		if(userTranslation[currentLevel][wordOrder[currentLevel][currentWord]]!= undefined){
 			
 			$('input').attr('readonly',true);
 		}
@@ -48,13 +61,37 @@ $(document).ready(function(){
 			$('input').attr('readonly',false);
 		}
 	});
-	
+	$("input[name='contact']").change(function(){
+		for(var i=0;i<wordAmount;i++){
+			userTranslation[currentLevel][wordOrder[currentLevel][i]]= undefined;
+			
+		}
+		$("#inputText").val("");
+		rightAnswer = 0;
+		falseAnswer = 0;
+		currentWord = 0;
+		if($('#level1').is(':checked')){
+			currentLevel =0;
+		}
+		else if($('#level2').is(':checked')){
+			currentLevel =1;
+		}
+		else if($('#level3').is(':checked')){
+			currentLevel =2;
+		}
+		$("#currentStep").html(currentWord+1 + " з " + wordAmount);
+		wordOrder[currentLevel].sort(() => Math.random() - 0.5);
+		$("#word").html(wordList[currentLevel][wordOrder[currentLevel][currentWord]]);
+		$("#rightAnswer").html(rightAnswer);
+		$("#falseAnswer").html(falseAnswer);
+		$('input').attr('readonly',false);
+	});
 	$('input').keydown(function(e) {
 		if((e.keyCode === 13)&&((!$('input').prop('readonly')))) {
 			
-			userTranslation[wordOrder[currentWord]] = $("#inputText").val();
+			userTranslation[currentLevel][wordOrder[currentLevel][currentWord]] = $("#inputText").val();
 			
-			if(userTranslation[wordOrder[currentWord]]==translationList[wordOrder[currentWord]]){
+			if(userTranslation[currentLevel][wordOrder[currentLevel][currentWord]]==translationList[currentLevel][wordOrder[currentLevel][currentWord]]){
 				
 				rightAnswer++;
 				$("#rightAnswer").html(rightAnswer);
